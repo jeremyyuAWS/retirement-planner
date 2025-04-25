@@ -384,4 +384,264 @@ export const enhancedDelayQuestions: EnhancedDemoQuestion[] = [
       description: 'Annual Social Security income based on claiming age'
     }
   }
+];
+
+// Explore Options questions with visualizations
+export const enhancedExploreQuestions: EnhancedDemoQuestion[] = [
+  {
+    question: "What are my different portfolio options?",
+    answer: "Based on your risk tolerance and retirement goals, we've generated three portfolio options: Aggressive (80% stocks, 20% bonds), Balanced (60% stocks, 40% bonds), and Safe (40% stocks, 60% bonds). Each portfolio is designed to meet different risk and return objectives while maintaining diversification.",
+    visualization: {
+      type: 'pie',
+      data: {
+        labels: ['Stocks', 'Bonds', 'Alternatives'],
+        datasets: [
+          {
+            label: 'Aggressive Portfolio',
+            data: [80, 15, 5],
+            backgroundColor: [
+              'rgba(239, 68, 68, 0.8)',
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(16, 185, 129, 0.8)'
+            ]
+          },
+          {
+            label: 'Balanced Portfolio',
+            data: [60, 35, 5],
+            backgroundColor: [
+              'rgba(239, 68, 68, 0.8)',
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(16, 185, 129, 0.8)'
+            ]
+          },
+          {
+            label: 'Safe Portfolio',
+            data: [40, 55, 5],
+            backgroundColor: [
+              'rgba(239, 68, 68, 0.8)',
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(16, 185, 129, 0.8)'
+            ]
+          }
+        ]
+      },
+      title: 'Portfolio Options by Asset Class',
+      description: 'Comparison of asset allocation across different portfolio options'
+    }
+  },
+  {
+    question: "How do these portfolios perform in different market conditions?",
+    answer: "Each portfolio has distinct performance characteristics. The Aggressive portfolio typically outperforms in bull markets but has larger drawdowns in bear markets. The Balanced portfolio offers moderate growth with less volatility, while the Safe portfolio provides stability but lower returns. For example, during the 2020 market downturn, the Aggressive portfolio dropped 30%, Balanced 20%, and Safe only 10%.",
+    visualization: {
+      type: 'line',
+      data: {
+        labels: ['2019', '2020', '2021', '2022', '2023'],
+        datasets: [
+          {
+            label: 'Aggressive',
+            data: [100, 70, 110, 90, 120],
+            borderColor: 'rgb(239, 68, 68)',
+          },
+          {
+            label: 'Balanced',
+            data: [100, 80, 105, 95, 110],
+            borderColor: 'rgb(59, 130, 246)',
+          },
+          {
+            label: 'Safe',
+            data: [100, 90, 100, 98, 105],
+            borderColor: 'rgb(16, 185, 129)',
+          }
+        ]
+      },
+      title: 'Portfolio Performance in Different Market Conditions',
+      description: 'Historical performance of different portfolio options'
+    }
+  }
+];
+
+// Compare Portfolios questions with visualizations
+export const enhancedCompareQuestions: EnhancedDemoQuestion[] = [
+  {
+    question: "Which portfolio is best for my retirement goals?",
+    answer: "The best portfolio depends on your specific goals and risk tolerance. The Aggressive portfolio might be suitable if you're comfortable with volatility and have a long time horizon. The Balanced portfolio offers a good middle ground for most investors. The Safe portfolio is ideal if you're close to retirement or have a low risk tolerance. Let's compare their projected outcomes.",
+    visualization: {
+      type: 'bar',
+      data: {
+        labels: ['Aggressive', 'Balanced', 'Safe'],
+        datasets: [
+          {
+            label: 'Projected Annual Return',
+            data: [9.5, 7.2, 5.0],
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          },
+          {
+            label: 'Maximum Drawdown',
+            data: [-35, -25, -15],
+            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+          }
+        ]
+      },
+      title: 'Portfolio Comparison Metrics',
+      description: 'Comparison of key metrics across portfolio options'
+    }
+  },
+  {
+    question: "How do these portfolios affect my retirement income?",
+    answer: "Your choice of portfolio can significantly impact your retirement income. For example, with a $1 million portfolio, the Aggressive option might provide $45,000 annually but with more volatility, while the Safe option might provide $35,000 with more stability. The Balanced option typically offers around $40,000 with moderate risk.",
+    visualization: {
+      type: 'line',
+      data: {
+        labels: ['Year 1', 'Year 5', 'Year 10', 'Year 15', 'Year 20'],
+        datasets: [
+          {
+            label: 'Aggressive Portfolio',
+            data: [45000, 48000, 52000, 55000, 58000],
+            borderColor: 'rgb(239, 68, 68)',
+          },
+          {
+            label: 'Balanced Portfolio',
+            data: [40000, 42000, 45000, 47000, 49000],
+            borderColor: 'rgb(59, 130, 246)',
+          },
+          {
+            label: 'Safe Portfolio',
+            data: [35000, 36000, 38000, 39000, 40000],
+            borderColor: 'rgb(16, 185, 129)',
+          }
+        ]
+      },
+      title: 'Projected Retirement Income by Portfolio',
+      description: 'Projected annual retirement income over 20 years'
+    }
+  }
+];
+
+// Printable Report questions with visualizations
+export const enhancedReportQuestions: EnhancedDemoQuestion[] = [
+  {
+    question: "What's included in my retirement report?",
+    answer: "Your retirement report includes a comprehensive analysis of your financial situation, including portfolio recommendations, income projections, tax strategies, and Social Security optimization. It also provides detailed visualizations of your retirement timeline, projected savings growth, and income streams.",
+    visualization: {
+      type: 'area',
+      data: {
+        labels: ['Current', 'Retirement', 'Year 5', 'Year 10', 'Year 15', 'Year 20'],
+        datasets: [
+          {
+            label: 'Portfolio Value',
+            data: [500000, 1000000, 1200000, 1400000, 1600000, 1800000],
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          },
+          {
+            label: 'Annual Income',
+            data: [0, 40000, 42000, 45000, 47000, 49000],
+            borderColor: 'rgb(16, 185, 129)',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          }
+        ]
+      },
+      title: 'Retirement Timeline Projection',
+      description: 'Projected portfolio value and annual income over retirement'
+    }
+  },
+  {
+    question: "How can I use this report with my financial advisor?",
+    answer: "This report serves as an excellent starting point for discussions with your financial advisor. It provides a clear picture of your retirement goals, risk tolerance, and recommended strategies. Your advisor can use this information to fine-tune your investment approach and create a personalized retirement plan.",
+    visualization: {
+      type: 'bar',
+      data: {
+        labels: ['Portfolio Allocation', 'Income Strategy', 'Tax Planning', 'Risk Management', 'Estate Planning'],
+        datasets: [
+          {
+            label: 'Current Status',
+            data: [60, 40, 30, 50, 20],
+            backgroundColor: 'rgba(156, 163, 175, 0.8)',
+          },
+          {
+            label: 'Recommended',
+            data: [80, 70, 60, 75, 50],
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          }
+        ]
+      },
+      title: 'Financial Planning Areas',
+      description: 'Current status vs. recommended coverage of key planning areas'
+    }
+  }
+];
+
+// Advisor Mode questions with visualizations
+export const enhancedAdvisorQuestions: EnhancedDemoQuestion[] = [
+  {
+    question: "What insights can I get about my client's retirement needs?",
+    answer: "The Customer Insights tab provides a comprehensive view of your client's retirement situation, including their risk tolerance, time horizon, and financial goals. It also shows their current portfolio, projected retirement income, and areas that need attention.",
+    visualization: {
+      type: 'pie',
+      data: {
+        labels: ['Retirement Savings', 'Social Security', 'Other Income', 'Gap'],
+        datasets: [
+          {
+            data: [40, 30, 20, 10],
+            backgroundColor: [
+              'rgba(59, 130, 246, 0.8)',
+              'rgba(16, 185, 129, 0.8)',
+              'rgba(245, 158, 11, 0.8)',
+              'rgba(239, 68, 68, 0.8)'
+            ]
+          }
+        ]
+      },
+      title: 'Client Retirement Income Sources',
+      description: 'Breakdown of projected retirement income sources'
+    }
+  },
+  {
+    question: "How can I customize portfolios for my clients?",
+    answer: "The Customize Portfolios tab allows you to adjust asset allocations, add specific investments, and modify strategies based on your client's needs. You can see real-time updates to risk metrics and projected returns as you make changes.",
+    visualization: {
+      type: 'bar',
+      data: {
+        labels: ['Stocks', 'Bonds', 'Real Estate', 'Commodities', 'Cash'],
+        datasets: [
+          {
+            label: 'Current',
+            data: [60, 30, 5, 3, 2],
+            backgroundColor: 'rgba(156, 163, 175, 0.8)',
+          },
+          {
+            label: 'Customized',
+            data: [55, 25, 10, 5, 5],
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          }
+        ]
+      },
+      title: 'Portfolio Customization Options',
+      description: 'Comparison of current and customized portfolio allocations'
+    }
+  },
+  {
+    question: "What ETF recommendations are available?",
+    answer: "The ETF Recommendations tab provides AI-powered suggestions for ETFs that match your client's investment objectives. It includes performance metrics, expense ratios, and risk characteristics for each recommendation.",
+    visualization: {
+      type: 'bar',
+      data: {
+        labels: ['VTI', 'VXUS', 'BND', 'VNQ', 'GLD'],
+        datasets: [
+          {
+            label: 'Expense Ratio',
+            data: [0.03, 0.08, 0.03, 0.12, 0.40],
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          },
+          {
+            label: '5-Year Return',
+            data: [12, 8, 3, 6, 9],
+            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+          }
+        ]
+      },
+      title: 'Recommended ETFs',
+      description: 'Comparison of expense ratios and returns for recommended ETFs'
+    }
+  }
 ]; 
