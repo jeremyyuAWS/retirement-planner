@@ -12,7 +12,7 @@ interface CustomerInsightsProps {
   customerId: string;
 }
 
-export const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
+const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
 
@@ -74,3 +74,5 @@ export const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }
     </div>
   );
 };
+
+export default CustomerInsights;
