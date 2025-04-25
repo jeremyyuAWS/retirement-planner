@@ -21,6 +21,7 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [showQuickQuestions, setShowQuickQuestions] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const quickQuestions = [
     'What is my current asset allocation?',
@@ -62,26 +63,29 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
     { date: 'Jun', value: 550000 },
   ];
 
+  const sendMessage = (content: string) => {
+    if (isSending || !content.trim()) return;
+    
+    setIsSending(true);
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: content.trim(),
+      timestamp: Date.now(),
+    };
+    
+    setMessages(prevMessages => [...prevMessages, newMessage]);
+    setInput('');
+    setIsSending(false);
+  };
+
   const handleSendMessage = () => {
-    if (input.trim()) {
-      const newMessage: Message = {
-        id: Date.now().toString(),
-        role: 'user',
-        content: input,
-        timestamp: Date.now(),
-      };
-      setMessages([...messages, newMessage]);
-      setInput('');
-    }
+    sendMessage(input);
   };
 
   const handleQuickQuestionSelect = (question: string) => {
-    setInput(question);
     setShowQuickQuestions(false);
-    // Add a small delay to ensure the input is set before sending
-    setTimeout(() => {
-      handleSendMessage();
-    }, 0);
+    sendMessage(question);
   };
 
   return (
@@ -209,10 +213,12 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask about portfolio changes..."
               className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isSending}
             />
             <button
               onClick={handleSendMessage}
-              className="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              disabled={isSending || !input.trim()}
             >
               <Send className="w-5 h-5" />
             </button>
