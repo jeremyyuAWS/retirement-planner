@@ -75,6 +75,15 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
     }
   };
 
+  const handleQuickQuestionSelect = (question: string) => {
+    setInput(question);
+    setShowQuickQuestions(false);
+    // Add a small delay to ensure the input is set before sending
+    setTimeout(() => {
+      handleSendMessage();
+    }, 0);
+  };
+
   return (
     <div className="space-y-6">
       {/* Portfolio Overview Section */}
@@ -214,10 +223,7 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
       <QuickQuestionsModal
         isOpen={showQuickQuestions}
         onClose={() => setShowQuickQuestions(false)}
-        onSelectQuestion={(question) => {
-          setInput(question);
-          setShowQuickQuestions(false);
-        }}
+        onSelectQuestion={handleQuickQuestionSelect}
         questions={quickQuestions}
       />
     </div>
