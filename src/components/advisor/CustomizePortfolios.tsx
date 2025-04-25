@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import PortfolioDonutChart from '../visualizations/PortfolioDonutChart';
+import PortfolioPerformanceChart from '../visualizations/PortfolioPerformanceChart';
+import RiskMetricsChart from '../visualizations/RiskMetricsChart';
 import PortfolioEditor from './PortfolioEditor';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, TrendingUp, AlertTriangle, Info } from 'lucide-react';
 import QuickQuestionsModal from '../QuickQuestionsModal';
 
 interface Message {
@@ -67,6 +69,24 @@ const CustomizePortfolios: React.FC = () => {
     return null;
   }
 
+  // Sample performance data
+  const performanceData = [
+    { year: 2018, value: 100000 },
+    { year: 2019, value: 115000 },
+    { year: 2020, value: 125000 },
+    { year: 2021, value: 140000 },
+    { year: 2022, value: 150000 },
+    { year: 2023, value: 165000 }
+  ];
+
+  // Sample risk metrics
+  const riskMetrics = {
+    volatility: 0.15,
+    sharpeRatio: 1.2,
+    maxDrawdown: 0.25,
+    beta: 1.1
+  };
+
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="flex justify-between items-center mb-4">
@@ -115,13 +135,6 @@ const CustomizePortfolios: React.FC = () => {
         onSelectQuestion={handleUserInput}
         questions={quickQuestions}
       />
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Customize Client Portfolios</h2>
-        <p className="text-gray-600">
-          Use the AI-powered editor to customize each portfolio option. You can adjust allocations, add asset classes, 
-          or modify the strategy using natural language commands.
-        </p>
-      </div>
 
       <div className="mb-6">
         <div className="flex border-b border-gray-200">
@@ -141,8 +154,8 @@ const CustomizePortfolios: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
             <h3 className="font-medium text-lg text-gray-900 mb-4">{activePortfolio.type} Portfolio</h3>
             
@@ -209,9 +222,65 @@ const CustomizePortfolios: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <h3 className="font-medium text-lg text-gray-900 mb-4">Risk Metrics</h3>
+            <div className="flex justify-center mb-4">
+              <RiskMetricsChart 
+                metrics={riskMetrics}
+                color={activePortfolio.colorScheme.primary}
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center text-sm text-gray-600">
+                <AlertTriangle className="w-4 h-4 mr-2 text-yellow-500" />
+                <span>Volatility: {riskMetrics.volatility.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <TrendingUp className="w-4 h-4 mr-2 text-green-500" />
+                <span>Sharpe Ratio: {riskMetrics.sharpeRatio.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <Info className="w-4 h-4 mr-2 text-blue-500" />
+                <span>Max Drawdown: {(riskMetrics.maxDrawdown * 100).toFixed(1)}%</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <Info className="w-4 h-4 mr-2 text-blue-500" />
+                <span>Beta: {riskMetrics.beta.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="md:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <h3 className="font-medium text-lg text-gray-900 mb-4">Historical Performance</h3>
+            <div className="flex justify-center mb-4">
+              <PortfolioPerformanceChart 
+                data={performanceData}
+                color={activePortfolio.colorScheme.primary}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="text-sm text-gray-500">1-Year Return</div>
+                <div className="text-lg font-medium text-green-600">+12.5%</div>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="text-sm text-gray-500">3-Year Return</div>
+                <div className="text-lg font-medium text-green-600">+8.2%</div>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="text-sm text-gray-500">5-Year Return</div>
+                <div className="text-lg font-medium text-green-600">+9.8%</div>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <div className="text-sm text-gray-500">10-Year Return</div>
+                <div className="text-lg font-medium text-green-600">+7.5%</div>
+              </div>
+            </div>
+          </div>
+
           <PortfolioEditor portfolioType={activePortfolio.type} />
         </div>
       </div>
