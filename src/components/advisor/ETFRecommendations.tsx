@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
-import { TrendingUp, AlertTriangle, Search, ExternalLink } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Search, ExternalLink, Send, MessageSquare } from 'lucide-react';
+import QuickQuestionsModal from '../QuickQuestionsModal';
 
 interface ETF {
   ticker: string;
@@ -12,11 +13,21 @@ interface ETF {
   url: string;
 }
 
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+}
+
 const ETFRecommendations: React.FC = () => {
   const { portfolios } = useAppContext();
   const [activePortfolio, setActivePortfolio] = useState(portfolios.length > 0 ? portfolios[0] : null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   if (portfolios.length === 0) {
     return (
@@ -116,198 +127,83 @@ const ETFRecommendations: React.FC = () => {
   
   const recommendedETFs = getRecommendedETFs();
   
+  const quickQuestions = [
+    "What are the top ETF recommendations for this customer?",
+    "What is the expense ratio for these ETFs?",
+    "How do these ETFs compare to their benchmarks?",
+    "What is the historical performance of these ETFs?",
+    "What are the key holdings in these ETFs?"
+  ];
+
+  const handleUserInput = (userInput: string) => {
+    if (!userInput.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: userInput,
+      timestamp: Date.now()
+    };
+
+    const aiMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: 'I understand your request. Let me help you with that.',
+      timestamp: Date.now() + 1
+    };
+
+    setMessages(prev => [...prev, userMessage, aiMessage]);
+    setInput('');
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-2">ETF Recommendations</h2>
-      <p className="text-gray-600 mb-6">
-        Based on the selected portfolio allocation, here are recommended ETFs to consider for implementation.
-        These suggestions are based on low cost, diversification, and appropriate risk level.
-      </p>
-      
-      <div className="mb-6">
-        <div className="flex space-x-4 mb-4">
-          {portfolios.map((portfolio) => (
-            <button
-              key={portfolio.type}
-              className={`py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
-                activePortfolio?.type === portfolio.type
-                  ? `bg-${portfolio.type === 'Aggressive' ? 'red' : portfolio.type === 'Balanced' ? 'blue' : 'green'}-100 text-${portfolio.type === 'Aggressive' ? 'red' : portfolio.type === 'Balanced' ? 'blue' : 'green'}-800 border border-${portfolio.type === 'Aggressive' ? 'red' : portfolio.type === 'Balanced' ? 'blue' : 'green'}-200`
-                  : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
-              }`}
-              onClick={() => setActivePortfolio(portfolio)}
-            >
-              {portfolio.type} Portfolio
-            </button>
-          ))}
-        </div>
-        
-        {activePortfolio && (
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-2 mb-4">
-            {Object.entries(activePortfolio.allocation).map(([key, value]) => (
-              <button
-                key={key}
-                className={`py-2 px-3 rounded-lg text-xs font-medium transition-colors ${
-                  selectedType === key
-                    ? 'bg-indigo-100 text-indigo-800 border border-indigo-200'
-                    : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
-                }`}
-                onClick={() => setSelectedType(selectedType === key ? null : key)}
-              >
-                {key.charAt(0).toUpperCase() + key.slice(1)} ({value}%)
-              </button>
-            ))}
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">ETF Recommendations</h2>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        >
+          <MessageSquare className="w-5 h-5" />
+        </button>
+      </div>
+      <div className="space-y-4 mb-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`p-3 rounded-lg ${
+              message.role === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100'
+            } max-w-[80%]`}
+          >
+            <div className="text-sm">{message.content}</div>
+            <div className="text-xs text-gray-500 mt-1">
+              {new Date(message.timestamp).toLocaleTimeString()}
+            </div>
           </div>
-        )}
-        
-        <div className="relative mb-4">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Search by ticker or name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        ))}
       </div>
-      
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-medium text-gray-900">Recommended ETFs for {activePortfolio?.type} Portfolio</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticker</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset Class</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Ratio</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Info</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {recommendedETFs.length > 0 ? (
-                recommendedETFs.map((etf) => (
-                  <tr key={etf.ticker} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{etf.ticker}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{etf.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{etf.type}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{etf.category}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{etf.expenseRatio.toFixed(2)}%</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        etf.risk === 'Low' 
-                          ? 'bg-green-100 text-green-800' 
-                          : etf.risk === 'Medium'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {etf.risk}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <a 
-                        href={etf.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700 inline-flex items-center"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Details
-                      </a>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                    No ETFs match your current filters. Try adjusting your search or selected asset class.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleUserInput(input)}
+          placeholder="Type your message..."
+          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={() => handleUserInput(input)}
+          className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <Send className="w-5 h-5" />
+        </button>
       </div>
-      
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-medium text-gray-900">All Available ETFs</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticker</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asset Class</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Ratio</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Info</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredETFs.length > 0 ? (
-                filteredETFs.map((etf) => (
-                  <tr key={etf.ticker} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">{etf.ticker}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{etf.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{etf.type}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{etf.category}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{etf.expenseRatio.toFixed(2)}%</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        etf.risk === 'Low' 
-                          ? 'bg-green-100 text-green-800' 
-                          : etf.risk === 'Medium'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {etf.risk}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <a 
-                        href={etf.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:text-blue-700 inline-flex items-center"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        Details
-                      </a>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                    No ETFs match your current filters. Try adjusting your search or selected asset class.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      <div className="mt-6 bg-yellow-50 p-4 rounded-lg flex items-start">
-        <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
-        <div>
-          <h4 className="font-medium text-yellow-800 mb-1">Disclaimer</h4>
-          <p className="text-sm text-yellow-700">
-            The ETF recommendations provided are for educational purposes only and do not constitute investment advice. 
-            Past performance is not indicative of future results. Always conduct your own research or consult with a qualified 
-            financial advisor before making investment decisions.
-          </p>
-        </div>
-      </div>
+      <QuickQuestionsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectQuestion={handleUserInput}
+        questions={quickQuestions}
+      />
     </div>
   );
 };

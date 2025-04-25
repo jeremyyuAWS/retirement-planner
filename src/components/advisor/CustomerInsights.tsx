@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send, MessageSquare } from 'lucide-react';
+import QuickQuestionsModal from '../QuickQuestionsModal';
 
 interface Message {
   id: string;
@@ -15,6 +16,15 @@ interface CustomerInsightsProps {
 const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const quickQuestions = [
+    "What are the key financial goals for this customer?",
+    "What is the customer's risk tolerance?",
+    "What is the customer's current investment portfolio?",
+    "What are the customer's retirement plans?",
+    "What is the customer's current income and expenses?"
+  ];
 
   const handleUserInput = (userInput: string) => {
     if (!userInput.trim()) return;
@@ -39,7 +49,15 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Customer Insights</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Customer Insights</h2>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="p-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        >
+          <MessageSquare className="w-5 h-5" />
+        </button>
+      </div>
       <div className="space-y-4 mb-4">
         {messages.map((message) => (
           <div
@@ -71,6 +89,12 @@ const CustomerInsights: React.FC<CustomerInsightsProps> = ({ customerId }) => {
           <Send className="w-5 h-5" />
         </button>
       </div>
+      <QuickQuestionsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectQuestion={handleUserInput}
+        questions={quickQuestions}
+      />
     </div>
   );
 };
