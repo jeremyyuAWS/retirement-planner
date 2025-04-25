@@ -24,6 +24,10 @@ import {
   enhancedSocialSecurityQuestions,
   enhancedContributionQuestions,
   enhancedDelayQuestions,
+  enhancedExploreQuestions,
+  enhancedCompareQuestions,
+  enhancedReportQuestions,
+  enhancedAdvisorQuestions,
   EnhancedDemoQuestion
 } from '../../data/enhancedDemoData';
 import { Chart } from 'react-chartjs-2';
@@ -57,6 +61,7 @@ ChartJS.register(
 
 interface QuickQuestionsProps {
   standalone?: boolean;
+  mode?: 'customer' | 'advisor';
 }
 
 interface ChatMessage {
@@ -71,14 +76,16 @@ interface ChatMessage {
   };
 }
 
-const QuickQuestions: React.FC<QuickQuestionsProps> = ({ standalone = true }) => {
+const QuickQuestions: React.FC<QuickQuestionsProps> = ({ standalone = true, mode = 'customer' }) => {
   const { addMessageToQuestionnaire } = useAppContext();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [input, setInput] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'portfolio' | 'tax' | 'social' | 'contribution' | 'delay'>('portfolio');
+  const [activeCategory, setActiveCategory] = useState<
+    'portfolio' | 'tax' | 'social' | 'contribution' | 'delay' | 'explore' | 'compare' | 'report' | 'insights' | 'customize' | 'etf'
+  >('portfolio');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -196,6 +203,18 @@ const QuickQuestions: React.FC<QuickQuestionsProps> = ({ standalone = true }) =>
         return enhancedTaxQuestions;
       case 'delay':
         return enhancedDelayQuestions;
+      case 'explore':
+        return enhancedExploreQuestions;
+      case 'compare':
+        return enhancedCompareQuestions;
+      case 'report':
+        return enhancedReportQuestions;
+      case 'insights':
+        return enhancedAdvisorQuestions.filter(q => q.question.includes("insights"));
+      case 'customize':
+        return enhancedAdvisorQuestions.filter(q => q.question.includes("customize"));
+      case 'etf':
+        return enhancedAdvisorQuestions.filter(q => q.question.includes("ETF"));
       default:
         return enhancedPortfolioQuestions;
     }
@@ -284,57 +303,124 @@ const QuickQuestions: React.FC<QuickQuestionsProps> = ({ standalone = true }) =>
 
         {isExpanded ? (
           <div className="flex flex-col h-full">
-            <div className="flex space-x-2 p-3 bg-gray-50 border-b border-gray-200">
-              <button
-                className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
-                  activeCategory === 'portfolio' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={() => setActiveCategory('portfolio')}
-              >
-                Portfolio
-              </button>
-              <button
-                className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
-                  activeCategory === 'contribution' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={() => setActiveCategory('contribution')}
-              >
-                Savings
-              </button>
-              <button
-                className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
-                  activeCategory === 'social' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={() => setActiveCategory('social')}
-              >
-                Social Security
-              </button>
-              <button
-                className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
-                  activeCategory === 'tax' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={() => setActiveCategory('tax')}
-              >
-                Taxes
-              </button>
-              <button
-                className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
-                  activeCategory === 'delay' 
-                    ? 'bg-blue-100 text-blue-700' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-                onClick={() => setActiveCategory('delay')}
-              >
-                Timing
-              </button>
+            <div className="flex space-x-2 p-3 bg-gray-50 border-b border-gray-200 overflow-x-auto">
+              {mode === 'customer' ? (
+                <>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'portfolio' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('portfolio')}
+                  >
+                    Portfolio
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'explore' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('explore')}
+                  >
+                    Explore
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'compare' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('compare')}
+                  >
+                    Compare
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'contribution' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('contribution')}
+                  >
+                    Savings
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'social' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('social')}
+                  >
+                    Social Security
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'tax' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('tax')}
+                  >
+                    Taxes
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'delay' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('delay')}
+                  >
+                    Timing
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'report' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('report')}
+                  >
+                    Report
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'insights' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('insights')}
+                  >
+                    Insights
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'customize' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('customize')}
+                  >
+                    Customize
+                  </button>
+                  <button
+                    className={`px-2.5 py-1 text-xs rounded-full whitespace-nowrap ${
+                      activeCategory === 'etf' 
+                        ? 'bg-blue-100 text-blue-700' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => setActiveCategory('etf')}
+                  >
+                    ETFs
+                  </button>
+                </>
+              )}
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-3">
